@@ -4,6 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { WishesModule } from './wishes/wishes.module';
 import { OffersModule } from './offers/offers.module';
+import { WishlistsModule } from './wishlists/wishlists.module';
+import { User } from './users/entities/user.entity';
+import { Wish } from './wishes/entities/wish.entity';
 
 @Module({
   controllers: [AppController],
@@ -14,12 +17,13 @@ import { OffersModule } from './offers/offers.module';
       port: 5432,
       username: 'nest_student',
       database: 'nest_project',
-      entities: [],
+      entities: [User, Wish],
       synchronize: true,
     }),
     UsersModule,
     WishesModule,
     OffersModule,
+    WishlistsModule,
   ],
   providers: [],
 })
