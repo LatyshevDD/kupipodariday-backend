@@ -1,9 +1,17 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne, OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { Wishlist } from '../../wishlists/entities/wishlists.entity';
+import { Offer } from '../../offers/entities/offer.entity';
 
 @Entity()
 export class Wish {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -12,6 +20,12 @@ export class Wish {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user.wishes)
+  owner: User;
+
+  @OneToMany(() => Offer, (offer) => offer.item)
+  offers: Offer[];
 
  //todo: имя не может быть короче одного символа
   @Column({
@@ -35,9 +49,6 @@ export class Wish {
   @Column()
   raised: number;
 
-  @ManyToOne(() => User, (user) => user.wishes)
-  owner: User;
-
   //todo: должно быть не менее 1 символа
   @Column({
     type: "varchar",
@@ -45,12 +56,7 @@ export class Wish {
   })
   description: string;
 
-  //todo: offers
-
   //todo: должно быть целое десятичное число
   @Column()
   copied: number;
-
-
-
 }

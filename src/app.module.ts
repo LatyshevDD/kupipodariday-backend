@@ -7,6 +7,8 @@ import { OffersModule } from './offers/offers.module';
 import { WishlistsModule } from './wishlists/wishlists.module';
 import { User } from './users/entities/user.entity';
 import { Wish } from './wishes/entities/wish.entity';
+import { Wishlist } from './wishlists/entities/wishlists.entity';
+import { Offer } from './offers/entities/offer.entity';
 
 @Module({
   controllers: [AppController],
@@ -17,7 +19,7 @@ import { Wish } from './wishes/entities/wish.entity';
       port: 5432,
       username: 'nest_student',
       database: 'nest_project',
-      entities: [User, Wish],
+      entities: [User, Wish, Wishlist, Offer],
       synchronize: true,
     }),
     UsersModule,
