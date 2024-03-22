@@ -9,6 +9,13 @@ import {
 import { Wish } from '../../wishes/entities/wish.entity';
 import { Wishlist } from '../../wishlists/entities/wishlists.entity';
 import { Offer } from '../../offers/entities/offer.entity';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Length,
+} from 'class-validator';
 
 @Entity()
 export class User {
@@ -21,35 +28,40 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  //todo: добавить мнимальную длинну равную 2
   @Column({
     type: "varchar",
-    length: 30,
     unique: true,
   })
+  @IsString()
+  @Length(2,30)
   username: string;
 
-  //todo: добавить мнимальную длинну равную 2
   @Column({
     type: "varchar",
-    length: 200,
     default: "Пока ничего не рассказал о себе",
   })
+  @IsString()
+  @Length(2,200)
+  @IsOptional()
   about: string;
 
   @Column({
     type: "varchar",
     default: "https://i.pravatar.cc/300",
   })
+  @IsUrl()
+  @IsOptional()
   avatar: string;
 
   @Column({
     type: "varchar",
     unique: true,
   })
+  @IsEmail()
   email: string;
 
   @Column()
+  @IsString()
   password: string;
 
   @OneToMany(() => Wish, (wish) => wish.owner)

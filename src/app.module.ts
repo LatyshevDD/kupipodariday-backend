@@ -10,6 +10,7 @@ import { Wish } from './wishes/entities/wish.entity';
 import { Wishlist } from './wishlists/entities/wishlists.entity';
 import { Offer } from './offers/entities/offer.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
@@ -33,6 +34,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     WishesModule,
     OffersModule,
     WishlistsModule,
+    AuthModule,
   ],
   providers: [],
 })
