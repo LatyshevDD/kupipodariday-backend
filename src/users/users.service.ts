@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { QueryFailedError, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -40,6 +36,10 @@ export class UsersService {
   }
 
   async findByUsername(username: string) {
-    return await this.usersRepository.findOne({ where: { username } });
+    return await this.usersRepository
+      .findOneOrFail({
+        select:{ username: true, password: true, id: true},
+        where: { username }
+      });
   }
 }
