@@ -19,7 +19,7 @@ import {
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn("uuid")
   id: number;
 
   @CreateDateColumn()
@@ -29,7 +29,7 @@ export class User {
   updatedAt: Date;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     unique: true,
   })
   @IsString()
@@ -60,7 +60,9 @@ export class User {
   @IsEmail()
   email: string;
 
-  @Column()
+  @Column({
+    select: false
+  })
   @IsString()
   password: string;
 
