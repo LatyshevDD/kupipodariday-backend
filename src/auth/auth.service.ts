@@ -25,10 +25,9 @@ export class AuthService {
       throw new UnauthorizedException("Некорректная пара логин и пароль")
     }
     const matched =  await bcrypt.compare(password, user.password);
-    if(!matched) {
+    if (!matched) {
       throw new UnauthorizedException("Некорректная пара логин и пароль")
     }
     return user;
-  };
+  }
 }
-

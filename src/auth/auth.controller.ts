@@ -3,7 +3,6 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UsersService } from '../users/users.service';
 import { LocalGuard } from '../guards/local.guard';
-import { AuthGuard } from '@nestjs/passport';
 import { User } from '../users/entities/user.entity';
 
 @Controller()
@@ -14,8 +13,7 @@ export class AuthController {
   ) {}
 
   // @UseGuards(LocalGuard)
-  @UseGuards(AuthGuard('local'))
-
+  @UseGuards(LocalGuard)
   @Post('signin')
   signin(@Req() req: {user: User}) {
     return this.authService.auth(req.user);
@@ -23,6 +21,15 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
-    return this.usersService.findByUsername(user.username);
+    const returnedUser = {
+      username: user.username,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+      id: user.id,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+    return returnedUser;
   }
 }

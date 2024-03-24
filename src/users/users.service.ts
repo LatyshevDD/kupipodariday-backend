@@ -38,8 +38,14 @@ export class UsersService {
   async findByUsername(username: string) {
     return await this.usersRepository
       .findOneOrFail({
-        select:{ username: true, password: true, id: true},
-        where: { username }
-      });
+      select: { username: true, password: true, id: true },
+      where: { username },
+    });
+  }
+
+  async findOne(id: string) {
+    return await this.usersRepository.findOneOrFail({
+      where: { id },
+    });
   }
 }

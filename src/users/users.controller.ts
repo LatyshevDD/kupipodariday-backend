@@ -1,23 +1,17 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { FindUserDto } from './dto/find-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtGuard } from '../guards/jwt.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @UseGuards(JwtGuard)
   @Get('me')
-  findOwn() {
-    return {
-      id: 5,
-      username: 'user',
-      about: 'Пока ничего не рассказал о себе',
-      avatar: 'https://i.pravatar.cc/300',
-      email: 'user@yandex.ru',
-      createdAt: '2024-03-16T12:16:41.861Z',
-      updatedAt: '2024-03-16T12:16:41.861Z',
-    };
+  findOwn(@Req() req) {
+    return req.user;
   }
 
   @Patch('me')
