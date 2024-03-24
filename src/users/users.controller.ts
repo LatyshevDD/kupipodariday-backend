@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { FindUserDto } from './dto/find-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtGuard } from '../guards/jwt.guard';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -10,21 +11,14 @@ export class UsersController {
 
   @UseGuards(JwtGuard)
   @Get('me')
-  findOwn(@Req() req) {
+  findOwn(@Req() req: Request & { user: User} ) {
     return req.user;
   }
 
+  @UseGuards(JwtGuard)
   @Patch('me')
-  update(@Body() updateUserDto: UpdateUserDto) {
-    return {
-      id: 5,
-      username: 'user',
-      about: 'Пока ничего не рассказал о себе',
-      avatar: 'https://i.pravatar.cc/300',
-      email: 'user@yandex.ru',
-      createdAt: '2024-03-16T12:19:51.623Z',
-      updatedAt: '2024-03-16T12:19:51.623Z',
-    };
+  async update(@Body() updateUserDto: UpdateUserDto, @Req() req: Request & { user: User }) {
+    return await this.usersService.updateById(req.user.id, updateUserDto);
   }
 
   @Get('me/wishes')

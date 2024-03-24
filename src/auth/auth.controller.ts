@@ -21,7 +21,7 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
-    const returnedUser = {
+    return {
       username: user.username,
       about: user.about,
       avatar: user.avatar,
@@ -30,6 +30,5 @@ export class AuthController {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
-    return returnedUser;
   }
 }
