@@ -45,7 +45,7 @@ export class UsersService {
     let newPassword: string;
 
     if (updateUserDto.password) {
-        newPassword = await bcrypt.hash(updateUserDto.password, 10);
+      newPassword = await bcrypt.hash(updateUserDto.password, 10);
     }
 
     const updatedUser = {

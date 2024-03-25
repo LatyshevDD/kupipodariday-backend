@@ -40,12 +40,10 @@ export class WishesController {
     };
   }
 
+  @UseGuards(JwtGuard)
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return {
-      id: id,
-      wish: 'wish',
-    };
+  findOne(@Param('id') id: string, @Req() req: Request & { user: User }) {
+    return this.wishesService.findOne(id);
   }
 
   //todo: уточнить тип body у входящего запроса

@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { Wish } from './entities/wish.entity';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { validate } from 'class-validator';
@@ -24,5 +24,23 @@ export class WishesService {
       throw new BadRequestException(messages);
     }
     await this.wishesRepository.save(wish);
+  }
+  async findOne(id: string) {
+    try {
+      return await this.wishesRepository.findOneOrFail({
+        where: { id },
+        relations: {owner: true, offers: true},
+      });
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        const err = error.driverError;
+        if (err.code === '22P02') {
+          throw new BadRequestException(
+            'Подарок с таким id не найден!',
+          );
+        }
+      }
+    }
+
   }
 }
