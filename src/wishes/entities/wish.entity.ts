@@ -9,11 +9,12 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { Wishlist } from '../../wishlists/entities/wishlists.entity';
 import { Offer } from '../../offers/entities/offer.entity';
+import { IsIn, IsInt, IsNumber, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 
 @Entity()
 export class Wish {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -27,36 +28,37 @@ export class Wish {
   @OneToMany(() => Offer, (offer) => offer.item)
   offers: Offer[];
 
- //todo: имя не может быть короче одного символа
-  @Column({
-    type: "varchar",
-    length: 250,
-  })
+  @Column()
+  @IsString()
+  @Length(1, 250)
   name: string;
 
   @Column()
+  @IsUrl()
   link: string;
 
-  //todo: должна быть проверка на валидный url
   @Column()
+  @IsUrl()
   image: string;
 
   //todo: должно быть округление до сотых
   @Column()
+  @IsNumber({ maxDecimalPlaces: 2 })
   price: number;
 
   //todo: должно быть округление до сотых
-  @Column()
+  @Column({ default: null })
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
   raised: number;
 
-  //todo: должно быть не менее 1 символа
-  @Column({
-    type: "varchar",
-    length: 1024,
-  })
+  @Column()
+  @IsString()
+  @Length(1, 1024)
   description: string;
 
-  //todo: должно быть целое десятичное число
-  @Column()
+  @Column({ default: null })
+  @IsOptional()
+  @IsInt()
   copied: number;
 }
