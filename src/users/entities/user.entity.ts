@@ -9,13 +9,7 @@ import {
 import { Wish } from '../../wishes/entities/wish.entity';
 import { Wishlist } from '../../wishlists/entities/wishlists.entity';
 import { Offer } from '../../offers/entities/offer.entity';
-import {
-  IsEmail,
-  IsOptional,
-  IsString,
-  IsUrl,
-  Length,
-} from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 
 @Entity()
 export class User {
@@ -33,35 +27,39 @@ export class User {
     unique: true,
   })
   @IsString()
-  @Length(2,30)
+  @Length(2, 30, {
+    message: 'Длинна строки должна составлять от 2 до 30 символов',
+  })
   username: string;
 
   @Column({
-    type: "varchar",
-    default: "Пока ничего не рассказал о себе",
+    type: 'varchar',
+    default: 'Пока ничего не рассказал о себе',
   })
   @IsString()
-  @Length(2,200)
+  @Length(2, 200, {
+    message: 'Длинна строки должна составлять от 2 до 200 символов',
+  })
   @IsOptional()
   about: string;
 
   @Column({
-    type: "varchar",
-    default: "https://i.pravatar.cc/300",
+    type: 'varchar',
+    default: 'https://i.pravatar.cc/300',
   })
-  @IsUrl()
+  @IsUrl({ message: 'Значение должно быть ссылкой' })
   @IsOptional()
   avatar: string;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
     unique: true,
   })
-  @IsEmail()
+  @IsEmail({ message: 'Значение должно быть адресом электронной почты' })
   email: string;
 
   @Column({
-    select: false
+    select: false,
   })
   @IsString()
   password: string;
@@ -69,10 +67,9 @@ export class User {
   @OneToMany(() => Wish, (wish) => wish.owner)
   wishes: Wish[];
 
-  @OneToMany(() => Offer, (offer) => offer.owner)
+  @OneToMany(() => Offer, (offer) => offer.user)
   offers: Offer[];
 
-  //todo: wishlists
   @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
   wishlists: Wishlist[];
 }

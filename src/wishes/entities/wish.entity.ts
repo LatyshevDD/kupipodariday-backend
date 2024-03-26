@@ -2,14 +2,21 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne, OneToMany,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { Wishlist } from '../../wishlists/entities/wishlists.entity';
 import { Offer } from '../../offers/entities/offer.entity';
-import { IsIn, IsInt, IsNumber, IsOptional, IsString, IsUrl, Length } from 'class-validator';
+import {
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Length,
+} from 'class-validator';
 
 @Entity()
 export class Wish {
@@ -30,7 +37,9 @@ export class Wish {
 
   @Column()
   @IsString()
-  @Length(1, 250)
+  @Length(1, 250, {
+    message: 'Длинна строки должна составлять от 2 до 200 символов',
+  })
   name: string;
 
   @Column()
@@ -41,15 +50,19 @@ export class Wish {
   @IsUrl()
   image: string;
 
-  //todo: должно быть округление до сотых
-  @Column()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @Column({ type: 'numeric' })
+  @IsNumber(
+    { maxDecimalPlaces: 2 },
+    { message: 'Значение должно быть округлено до сотых' },
+  )
   price: number;
 
-  //todo: должно быть округление до сотых
-  @Column({ default: null })
+  @Column({ type: 'numeric', default: null })
   @IsOptional()
-  @IsNumber({ maxDecimalPlaces: 2 })
+  @IsNumber(
+    { maxDecimalPlaces: 2 },
+    { message: 'Значение должно быть округлено до сотых' },
+  )
   raised: number;
 
   @Column()

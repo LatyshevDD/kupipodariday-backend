@@ -1,11 +1,19 @@
-import { CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Wish } from '../../wishes/entities/wish.entity';
+import { IsBoolean, IsNumber } from 'class-validator';
 
 @Entity()
 export class Offer {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -14,8 +22,18 @@ export class Offer {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.wishes)
-  owner: User;
+  user: User;
 
   @ManyToOne(() => Wish, (wish) => wish.offers)
   item: Wish;
+
+  @Column({ type: 'numeric' })
+  @IsNumber({ maxDecimalPlaces: 2 })
+  amount: number;
+
+  @Column({
+    default: false,
+  })
+  @IsBoolean({ message: 'Должно быть указано булевое значение' })
+  hidden: boolean;
 }

@@ -6,7 +6,9 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Post, Req, UseGuards,
+  Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
@@ -15,13 +17,14 @@ import { User } from '../users/entities/user.entity';
 
 @Controller('wishes')
 export class WishesController {
-  constructor(
-    private readonly wishesService: WishesService
-  ) {}
+  constructor(private readonly wishesService: WishesService) {}
 
   @UseGuards(JwtGuard)
   @Post()
-  async create(@Body() createWishDto: CreateWishDto, @Req() req: Request & { user: User }) {
+  async create(
+    @Body() createWishDto: CreateWishDto,
+    @Req() req: Request & { user: User },
+  ) {
     await this.wishesService.create(createWishDto, req.user);
     return {};
   }

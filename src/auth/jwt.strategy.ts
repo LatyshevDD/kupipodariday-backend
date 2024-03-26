@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     try {
       user = await this.usersService.findOne(jwtPayload.sub);
     } catch (error) {
-      throw new UnauthorizedException("Необходима авторизация");
+      throw new UnauthorizedException('Необходима авторизация');
     }
     return user;
   }
