@@ -17,6 +17,7 @@ import {
   IsUrl,
   Length,
 } from 'class-validator';
+import { ColumnNumericTransformer } from '../../utils/utils';
 
 @Entity()
 export class Wish {
@@ -50,24 +51,26 @@ export class Wish {
   @IsUrl()
   image: string;
 
-  @Column({ type: 'numeric' })
+  @Column({ type: 'numeric', transformer: new ColumnNumericTransformer() })
   @IsNumber(
     { maxDecimalPlaces: 2 },
-    { message: 'Значение должно быть округлено до сотых' },
+    { message: 'Значение price должно быть округлено до сотых' },
   )
   price: number;
 
-  @Column({ type: 'numeric', default: null })
+  @Column({ type: 'numeric', default: null, transformer: new ColumnNumericTransformer() })
   @IsOptional()
   @IsNumber(
     { maxDecimalPlaces: 2 },
-    { message: 'Значение должно быть округлено до сотых' },
+    { message: 'Значение raised должно быть округлено до сотых' },
   )
   raised: number;
 
   @Column()
   @IsString()
-  @Length(1, 1024)
+  @Length(1, 1024, {
+    message: 'Длинна строки должна составлять от 1 до 1024 символов',
+  })
   description: string;
 
   @Column({ default: null })

@@ -72,7 +72,7 @@ export class UsersService {
         const err = error.driverError;
         if (err.code === '23505') {
           throw new ConflictException(
-          'Пользователь с таким email или username уже зарегистрирован',
+            'Пользователь с таким email или username уже зарегистрирован',
           );
         }
       }
@@ -90,6 +90,8 @@ export class UsersService {
   async findOne(id: string) {
     return await this.usersRepository.findOneOrFail({
       where: { id },
+      //todo добавить в relations wishlists
+      relations: { wishes: true, offers: true }
     });
   }
 }

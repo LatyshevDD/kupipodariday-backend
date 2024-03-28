@@ -9,11 +9,12 @@ import {
 } from 'typeorm';
 import { Wish } from '../../wishes/entities/wish.entity';
 import { User } from '../../users/entities/user.entity';
+import { IsString, IsUrl, Length } from 'class-validator';
 
 @Entity()
 export class Wishlist {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -21,14 +22,15 @@ export class Wishlist {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  //todo: не может быть короче одного символа
-  @Column({
-    type: "varchar",
-    length: 250,
+  @Column()
+  @IsString()
+  @Length(1, 250, {
+    message: 'Длинна строки должна составлять от 1 до 250 символов',
   })
   name: string;
 
   @Column()
+  @IsUrl({ message: 'Значение должно быть ссылкой' })
   image: string;
 
   @ManyToMany(() => Wish)

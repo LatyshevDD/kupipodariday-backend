@@ -46,6 +46,7 @@ export class WishesController {
   @UseGuards(JwtGuard)
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: Request & { user: User }) {
+    //todo: добавить в relations wishlists
     return this.wishesService.findOne(id);
   }
 
