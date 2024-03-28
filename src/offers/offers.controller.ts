@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -17,26 +17,21 @@ export class OffersController {
   async create(@Body() createOfferDto: CreateOfferDto, @Req() req: Request & { user: User }) {
     await this.wishesService.checkOwner(createOfferDto.itemId, req.user.id);
     await this.wishesService.checkRaised(createOfferDto.itemId, createOfferDto.amount);
-    const wish = await this.wishesService.findOne(createOfferDto.itemId)
+    const wish = await this.wishesService.findOne(createOfferDto.itemId);
     await this.offersService.create(createOfferDto, req.user, wish);
-    await  this.wishesService.updateRaised(createOfferDto.itemId, createOfferDto.amount)
+    await this.wishesService.updateRaised(createOfferDto.itemId, createOfferDto.amount);
     return {};
   }
 
+  @UseGuards(JwtGuard)
   @Get()
   findAll() {
-    return [
-      {
-        offer: "offer",
-      },
-    ];
+    return this.offersService.findAll();
   }
 
+  @UseGuards(JwtGuard)
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return {
-      id: id,
-      offer: "offer"
-    };
+  findOne(@Param('id') id: string) {
+    return this.offersService.findOne(id);
   }
 }
