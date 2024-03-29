@@ -38,7 +38,7 @@ export class OffersService {
       relations: {
         item: true,
         user: true,
-      }
+      },
     })
   }
 

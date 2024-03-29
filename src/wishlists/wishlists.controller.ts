@@ -1,28 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards, Req } from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
-import { CreateWishlistlistDto } from './dto/create-wishlistlist.dto';
+import { CreateWishlistsDto } from './dto/create-wishlists.dto';
 import { UpdateWishlistlistDto } from './dto/update-wishlistlist.dto';
+import { JwtGuard } from '../guards/jwt.guard';
+import { User } from '../users/entities/user.entity';
+import { WishesService } from '../wishes/wishes.service';
 
 @Controller('wishlists')
 export class WishlistsController {
-  constructor(private readonly wishlistlistsService: WishlistsService) {}
+  constructor(
+    private readonly wishlistsService: WishlistsService,
+    private readonly wishesService: WishesService
+  ) {}
 
+  @UseGuards(JwtGuard)
   @Get()
   findAll() {
-    return [
-      {
-        wishlist1: "wishlist1",
-      },
-      {
-        wishlist2: "wishlist2",
-      }
-    ];
+    return this.wishlistsService.findAll();
   }
+  @UseGuards(JwtGuard)
   @Post()
-  create(@Body() createWishlistlistDto: CreateWishlistlistDto) {
-    return {
-      newwishlist: "newwishlist"
-    };
+  async create(@Body() createWishlistsDto: CreateWishlistsDto, @Req() req: Request & { user: User }) {
+    const wishes = await this.wishesService.findManyById(createWishlistsDto.itemsId);
+    return this.wishlistsService.create(createWishlistsDto, req.user, wishes);
   }
 
   @Get(':id')

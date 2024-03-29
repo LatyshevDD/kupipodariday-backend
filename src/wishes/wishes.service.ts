@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
-import { QueryFailedError, Repository } from 'typeorm';
+import { In, QueryFailedError, Repository } from 'typeorm';
 import { Wish } from './entities/wish.entity';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { validate } from 'class-validator';
@@ -48,7 +48,7 @@ export class WishesService {
   async checkOwner(wishId: string, userId: string) {
     let wish: Wish;
     try {
-        wish = await this.wishesRepository.findOne({
+      wish = await this.wishesRepository.findOne({
         where: { id: wishId },
         select: {id: true},
         relations: { owner: true }
@@ -113,7 +113,14 @@ export class WishesService {
       }
     }
     const raised = parseFloat((wish.raised + amount).toFixed(2));
-
     await this.wishesRepository.save({ id: wishId, raised: raised });
+  }
+
+  findManyById(wishesId: string[]) {
+    return this.wishesRepository.find({
+      where: {
+        id: In(wishesId)
+      }
+    })
   }
 }

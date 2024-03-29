@@ -38,7 +38,7 @@ export class UsersService {
 
   async updateById(id: string, updateUserDto: UpdateUserDto) {
     const existUser = await this.usersRepository.findOne({
-      select: { username: true, password: true, id: true, about: true, avatar: true, email: true},
+      select: { username: true, password: true, id: true, about: true, avatar: true, email: true },
       where: { id },
     });
 
