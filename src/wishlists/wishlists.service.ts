@@ -84,4 +84,25 @@ export class WishlistsService {
     }
     return await this.wishlistRepository.save(wishlist);
   }
+
+  async checkOwner(wishlistId: string, userId: string) {
+    let wishlist: Wishlist;
+    try {
+      wishlist = await this.wishlistRepository.findOne({
+        where: { id: wishlistId },
+        select: {id: true},
+        relations: { owner: true }
+      });
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        const err = error.driverError;
+        if (err.code === '22P02') {
+          throw new BadRequestException(
+            'Wishlist с таким id не найден!',
+          );
+        }
+      }
+    }
+    return wishlist.owner.id === userId;
+  }
 }

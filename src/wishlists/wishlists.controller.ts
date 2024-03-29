@@ -8,7 +8,7 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
-  Req,
+  Req, ForbiddenException,
 } from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistsDto } from './dto/create-wishlists.dto';
@@ -53,7 +53,12 @@ export class WishlistsController {
   async update(
     @Param('id') id: string,
     @Body() updateWishlistsDto: UpdateWishlistsDto,
+    @Req() req: Request & { user: User }
   ) {
+    const isOwner = await this.wishlistsService.checkOwner(id, req.user.id)
+    if (!isOwner) {
+      throw new ForbiddenException("Допускется изменять только свои wishlists")
+    }
     let wishes: Wish[];
     if (updateWishlistsDto.itemsId && updateWishlistsDto.itemsId.length > 0) {
       wishes = await this.wishesService.findManyById(

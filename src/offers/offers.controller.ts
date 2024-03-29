@@ -17,7 +17,9 @@ export class OffersController {
   async create(@Body() createOfferDto: CreateOfferDto, @Req() req: Request & { user: User }) {
     const isOwner = await this.wishesService.checkOwner(createOfferDto.itemId, req.user.id);
     if (isOwner) {
-      throw new ForbiddenException('Не допускается скидываться на собственные подарки')
+      throw new ForbiddenException(
+        'Не допускается скидываться на собственные подарки',
+      );
     }
     await this.wishesService.checkRaised(createOfferDto.itemId, createOfferDto.amount);
     const wish = await this.wishesService.findOne(createOfferDto.itemId);
