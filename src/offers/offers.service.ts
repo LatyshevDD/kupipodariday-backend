@@ -39,7 +39,7 @@ export class OffersService {
         item: true,
         user: true,
       },
-    })
+    });
   }
 
   async findOne(id: string) {

@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateWishlistsDto } from './dto/create-wishlists.dto';
-import { UpdateWishlistlistDto } from './dto/update-wishlistlist.dto';
+import { UpdateWishlistsDto } from './dto/update-wishlists.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from '../wishes/entities/wish.entity';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { Wishlist } from './entities/wishlists.entity';
 import { User } from '../users/entities/user.entity';
 import { validate } from 'class-validator';
@@ -33,9 +33,55 @@ export class WishlistsService {
     return await this.wishlistRepository.find({
       relations: {
         owner: true,
-        items: true
+        items: true,
       }
     })
+  }
 
+  async findOne(id: string) {
+    try {
+      return await this.wishlistRepository.findOne({
+        where: { id },
+        relations: { owner: true, items: true }
+      });
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        const err = error.driverError;
+        if (err.code === '22P02') {
+          throw new BadRequestException(
+            'Wishlist с таким id не найден!',
+          );
+        }
+      }
+    }
+  }
+
+  async update(id: string, updateWishlistsDto: UpdateWishlistsDto, wishes?: Wish[]) {
+    const existWishlist = await this.wishlistRepository.findOne({
+      relations: {
+        items: true,
+      },
+      where: {
+        id
+      },
+      select: {
+        id: true,
+        name: true,
+        image: true,
+      }
+    });
+    const updatedWishlist = {
+      id: existWishlist.id,
+      name: updateWishlistsDto.name ? updateWishlistsDto.name : existWishlist.name,
+      image: updateWishlistsDto.image ? updateWishlistsDto.image : existWishlist.image,
+      items: wishes ? wishes : existWishlist.items,
+    }
+    const wishlist = this.wishlistRepository.create(updatedWishlist);
+    const errors = await validate(wishlist);
+    if (errors.length > 0) {
+      const messages = errors.map((error) => error.constraints);
+      throw new BadRequestException(messages);
+    }
+    return await this.wishlistRepository.save(wishlist);
   }
 }

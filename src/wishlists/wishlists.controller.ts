@@ -1,10 +1,11 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards, Req } from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistsDto } from './dto/create-wishlists.dto';
-import { UpdateWishlistlistDto } from './dto/update-wishlistlist.dto';
+import { UpdateWishlistsDto } from './dto/update-wishlists.dto';
 import { JwtGuard } from '../guards/jwt.guard';
 import { User } from '../users/entities/user.entity';
 import { WishesService } from '../wishes/wishes.service';
+import { Wish } from '../wishes/entities/wish.entity';
 
 @Controller('wishlists')
 export class WishlistsController {
@@ -21,22 +22,27 @@ export class WishlistsController {
   @UseGuards(JwtGuard)
   @Post()
   async create(@Body() createWishlistsDto: CreateWishlistsDto, @Req() req: Request & { user: User }) {
-    const wishes = await this.wishesService.findManyById(createWishlistsDto.itemsId);
+    const wishes = await this.wishesService.findManyById(
+      createWishlistsDto.itemsId,
+    );
     return this.wishlistsService.create(createWishlistsDto, req.user, wishes);
   }
 
+  @UseGuards(JwtGuard)
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return {
-      wishlist: "wishlist",
-    };
+  findOne(@Param('id') id: string) {
+    return this.wishlistsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateWishlistlistDto: UpdateWishlistlistDto) {
-    return {
-      updatedwishlist: "data"
-    };
+  async update(@Param('id') id: string, @Body() updateWishlistsDto: UpdateWishlistsDto) {
+    let wishes: Wish[];
+    if(updateWishlistsDto.itemsId && updateWishlistsDto.itemsId.length > 0) {
+      wishes = await this.wishesService.findManyById(
+        updateWishlistsDto.itemsId,
+      );
+    }
+    return this.wishlistsService.update(id, updateWishlistsDto, wishes);
   }
 
   @Delete(':id')
