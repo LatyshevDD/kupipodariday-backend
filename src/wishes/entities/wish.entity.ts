@@ -58,7 +58,11 @@ export class Wish {
   )
   price: number;
 
-  @Column({ type: 'numeric', default: null, transformer: new ColumnNumericTransformer() })
+  @Column({
+    type: 'numeric',
+    default: null,
+    transformer: new ColumnNumericTransformer(),
+  })
   @IsOptional()
   @IsNumber(
     { maxDecimalPlaces: 2 },

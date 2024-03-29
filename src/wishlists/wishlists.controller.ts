@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistsDto } from './dto/create-wishlists.dto';
 import { UpdateWishlistsDto } from './dto/update-wishlists.dto';
@@ -11,7 +22,7 @@ import { Wish } from '../wishes/entities/wish.entity';
 export class WishlistsController {
   constructor(
     private readonly wishlistsService: WishlistsService,
-    private readonly wishesService: WishesService
+    private readonly wishesService: WishesService,
   ) {}
 
   @UseGuards(JwtGuard)
@@ -21,7 +32,10 @@ export class WishlistsController {
   }
   @UseGuards(JwtGuard)
   @Post()
-  async create(@Body() createWishlistsDto: CreateWishlistsDto, @Req() req: Request & { user: User }) {
+  async create(
+    @Body() createWishlistsDto: CreateWishlistsDto,
+    @Req() req: Request & { user: User },
+  ) {
     const wishes = await this.wishesService.findManyById(
       createWishlistsDto.itemsId,
     );
@@ -34,10 +48,14 @@ export class WishlistsController {
     return this.wishlistsService.findOne(id);
   }
 
+  @UseGuards(JwtGuard)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateWishlistsDto: UpdateWishlistsDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateWishlistsDto: UpdateWishlistsDto,
+  ) {
     let wishes: Wish[];
-    if(updateWishlistsDto.itemsId && updateWishlistsDto.itemsId.length > 0) {
+    if (updateWishlistsDto.itemsId && updateWishlistsDto.itemsId.length > 0) {
       wishes = await this.wishesService.findManyById(
         updateWishlistsDto.itemsId,
       );
@@ -45,10 +63,11 @@ export class WishlistsController {
     return this.wishlistsService.update(id, updateWishlistsDto, wishes);
   }
 
+  @UseGuards(JwtGuard)
   @Delete(':id')
   removeOne(@Param('id', ParseIntPipe) id: number) {
     return {
-      deletedwishlist: 'data'
+      deletedwishlist: 'data',
     };
   }
 }

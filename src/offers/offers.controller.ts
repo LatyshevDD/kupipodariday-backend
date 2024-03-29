@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -15,7 +15,10 @@ export class OffersController {
   @UseGuards(JwtGuard)
   @Post()
   async create(@Body() createOfferDto: CreateOfferDto, @Req() req: Request & { user: User }) {
-    await this.wishesService.checkOwner(createOfferDto.itemId, req.user.id);
+    const isOwner = await this.wishesService.checkOwner(createOfferDto.itemId, req.user.id);
+    if (isOwner) {
+      throw new ForbiddenException('Не допускается скидываться на собственные подарки')
+    }
     await this.wishesService.checkRaised(createOfferDto.itemId, createOfferDto.amount);
     const wish = await this.wishesService.findOne(createOfferDto.itemId);
     await this.offersService.create(createOfferDto, req.user, wish);

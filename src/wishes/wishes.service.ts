@@ -52,8 +52,7 @@ export class WishesService {
         where: { id: wishId },
         select: {id: true},
         relations: { owner: true }
-      })
-
+      });
     } catch (error) {
       if (error instanceof QueryFailedError) {
         const err = error.driverError;
@@ -64,9 +63,7 @@ export class WishesService {
         }
       }
     }
-    if (wish.owner.id === userId) {
-      throw new ForbiddenException('Не допускается скидываться на собственные подарки')
-    }
+    return wish.owner.id === userId
   }
 
   async checkRaised(wishId: string, offerAmount: number) {
@@ -100,7 +97,7 @@ export class WishesService {
     try {
       wish = await this.wishesRepository.findOne({
         where: { id: wishId },
-        select: { raised: true },
+        select: { id: true, raised: true },
       })
     } catch (error) {
       if (error instanceof QueryFailedError) {
@@ -112,8 +109,9 @@ export class WishesService {
         }
       }
     }
-    const raised = parseFloat((wish.raised + amount).toFixed(2));
-    await this.wishesRepository.save({ id: wishId, raised: raised });
+    const raised = wish.raised ? wish.raised : 0;
+    const newRaised = parseFloat((raised + amount).toFixed(2));
+    await this.wishesRepository.save({ id: wishId, raised: newRaised });
   }
 
   findManyById(wishesId: string[]) {
