@@ -79,8 +79,21 @@ export class WishesController {
     return this.wishesService.removeOne(id);
   }
 
+  @UseGuards(JwtGuard)
   @Post(':id/copy')
-  copyWish(@Param('id', ParseIntPipe) id: number) {
+  async copyWish(@Param('id') id: string, @Req() req: Request & { user: User }) {
+    const isOwner = await this.wishesService.checkOwner(id, req.user.id)
+    if (isOwner) {
+      throw new ForbiddenException("Вы не можете копировать свои wishes")
+    }
+    const wish = await this.wishesService.findOne(id);
+    await this.wishesService.create({
+      name: wish.name,
+      link: wish.link,
+      image: wish.image,
+      price: wish.price,
+      description: wish.description,
+    }, req.user)
     return {};
   }
 }

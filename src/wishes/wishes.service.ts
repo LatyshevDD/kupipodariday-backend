@@ -186,7 +186,7 @@ export class WishesService {
   async removeOne(id: string) {
     const wish = await this.wishesRepository.findOne({
       where: {
-        id
+        id,
       },
       relations: {
         offers: true,
