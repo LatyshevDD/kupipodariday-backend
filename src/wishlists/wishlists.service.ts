@@ -111,13 +111,6 @@ export class WishlistsService {
       where: {
         id
       },
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-        image: true,
-      },
       relations: {
         owner: true,
         items: true

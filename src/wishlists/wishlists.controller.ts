@@ -73,7 +73,7 @@ export class WishlistsController {
   async removeOne(@Param('id') id: string, @Req() req: Request & { user: User }) {
     const isOwner = await this.wishlistsService.checkOwner(id, req.user.id);
     if (!isOwner) {
-      throw new ForbiddenException("Удалять можно только свой wishlist")
+      throw new ForbiddenException('Удалять можно только свой wishlist');
     }
     return this.wishlistsService.removeOne(id);
   }

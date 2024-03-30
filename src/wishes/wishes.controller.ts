@@ -69,9 +69,14 @@ export class WishesController {
     return await this.wishesService.update(id, updateWishDto);
   }
 
+  @UseGuards(JwtGuard)
   @Delete(':id')
-  removeOne(@Param('id') id: string) {
-    return {};
+  async removeOne(@Param('id') id: string, @Req() req: Request & { user: User }) {
+    const isOwner = await this.wishesService.checkOwner(id, req.user.id)
+    if (!isOwner) {
+      throw new ForbiddenException("Вы можете удалять только свои wishes")
+    }
+    return this.wishesService.removeOne(id);
   }
 
   @Post(':id/copy')

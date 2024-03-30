@@ -182,4 +182,18 @@ export class WishesService {
 
     return await this.wishesRepository.save(wish);
   }
+
+  async removeOne(id: string) {
+    const wish = await this.wishesRepository.findOne({
+      where: {
+        id
+      },
+      relations: {
+        offers: true,
+        owner: true,
+        wishlists: true
+      }
+    })
+    return this.wishesRepository.remove(wish);
+  }
 }
