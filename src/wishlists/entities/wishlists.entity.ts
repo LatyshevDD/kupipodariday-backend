@@ -33,7 +33,7 @@ export class Wishlist {
   @IsUrl({ message: 'Значение должно быть ссылкой' })
   image: string;
 
-  @ManyToMany(() => Wish)
+  @ManyToMany(() => Wish, (wish) => wish.wishlists)
   @JoinTable()
   items: Wish[];
 

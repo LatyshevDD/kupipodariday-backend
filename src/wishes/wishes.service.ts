@@ -5,6 +5,7 @@ import { In, QueryFailedError, Repository } from 'typeorm';
 import { Wish } from './entities/wish.entity';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { validate } from 'class-validator';
+import { UpdateWishDto } from './dto/update-wish.dto';
 
 @Injectable()
 export class WishesService {
@@ -23,15 +24,13 @@ export class WishesService {
       const messages = errors.map((error) => error.constraints);
       throw new BadRequestException(messages);
     }
-    await this.wishesRepository.save(wish);
+    return await this.wishesRepository.save(wish);
   }
   async findOne(id: string) {
     try {
-      //todo: удалить файл types findOptions
-      return await this.wishesRepository.findOneOrFail({
+      return await this.wishesRepository.findOne({
         where: { id },
-        //todo: добавить wishlists
-        relations: { owner: true, offers: true }
+        relations: { owner: true, offers: true, wishlists: true }
       });
     } catch (error) {
       if (error instanceof QueryFailedError) {
@@ -63,7 +62,7 @@ export class WishesService {
         }
       }
     }
-    return wish.owner.id === userId
+    return wish.owner.id === userId;
   }
 
   async checkRaised(wishId: string, offerAmount: number) {
@@ -120,5 +119,67 @@ export class WishesService {
         id: In(wishesId)
       }
     })
+  }
+
+  async checkOffers(id: string) {
+    const wish = await this.wishesRepository.findOne({
+      where: {
+        id
+      },
+      select: {
+        id: true
+      },
+      relations: {
+        offers: true
+      }
+    })
+    return wish.offers.length > 0;
+  }
+
+  async update(id: string, updateWishDto: UpdateWishDto) {
+    let existWish: Wish;
+    //todo проверить все методы update на наличие try catch
+    try {
+      existWish = await this.wishesRepository.findOne({
+        where: {
+          id
+        },
+        select: {
+          id: true,
+          name: true,
+          link: true,
+          image: true,
+          price: true,
+          description: true,
+        }
+      })
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        const err = error.driverError;
+        if (err.code === '22P02') {
+          throw new BadRequestException(
+            'Подарок с таким id не найден!',
+          );
+        }
+      }
+    }
+    const updatedWish = {
+      id: existWish.id,
+      name: updateWishDto.name ? updateWishDto.name : existWish.name,
+      link: updateWishDto.link ? updateWishDto.link : existWish.link,
+      image: updateWishDto.image ? updateWishDto.image : existWish.image,
+      price: updateWishDto.price ? updateWishDto.price : existWish.price,
+      description: updateWishDto.description ? updateWishDto.description : existWish.description,
+    };
+
+    const wish = this.wishesRepository.create(updatedWish);
+
+    const errors = await validate(wish);
+    if (errors.length > 0) {
+      const messages = errors.map((error) => error.constraints);
+      throw new BadRequestException(messages);
+    }
+
+    return await this.wishesRepository.save(wish);
   }
 }

@@ -1,7 +1,7 @@
 import {
   Column,
   CreateDateColumn,
-  Entity,
+  Entity, ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -18,6 +18,7 @@ import {
   Length,
 } from 'class-validator';
 import { ColumnNumericTransformer } from '../../utils/utils';
+import { Wishlist } from '../../wishlists/entities/wishlists.entity';
 
 @Entity()
 export class Wish {
@@ -81,4 +82,7 @@ export class Wish {
   @IsOptional()
   @IsInt()
   copied: number;
+
+  @ManyToMany(() => Wishlist, (wishlist) => wishlist.items)
+  wishlists: Wishlist[];
 }
