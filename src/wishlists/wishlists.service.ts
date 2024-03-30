@@ -105,4 +105,24 @@ export class WishlistsService {
     }
     return wishlist.owner.id === userId;
   }
+
+  async removeOne(id: string) {
+    const wishlist = await this.wishlistRepository.findOne({
+      where: {
+        id
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+        image: true,
+      },
+      relations: {
+        owner: true,
+        items: true
+      }
+    })
+    return await this.wishlistRepository.remove(wishlist);
+  }
 }
