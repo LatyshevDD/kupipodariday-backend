@@ -117,7 +117,7 @@ export class WishesService {
     return this.wishesRepository.find({
       where: {
         id: In(wishesId)
-      }
+      },
     })
   }
 
@@ -195,5 +195,29 @@ export class WishesService {
       }
     })
     return this.wishesRepository.remove(wish);
+  }
+
+  async findLast() {
+    return await this.wishesRepository.find({
+      take: 40,
+      order: {
+        createdAt: "DESC",
+      },
+      relations: {
+        owner: true,
+      }
+    })
+  }
+
+  async findTop() {
+    return await this.wishesRepository.find({
+      take: 20,
+      order: {
+        copied: "DESC",
+      },
+      relations: {
+        owner: true,
+      }
+    })
   }
 }

@@ -29,18 +29,16 @@ export class WishesController {
     return this.wishesService.create(createWishDto, req.user);
   }
 
+  @UseGuards(JwtGuard)
   @Get('last')
   findLast() {
-    return {
-      lastwish: 'lastwish',
-    };
+    return this.wishesService.findLast();
   }
 
+  @UseGuards(JwtGuard)
   @Get('top')
   findTop() {
-    return {
-      topwish: 'toptwish',
-    };
+    return this.wishesService.findTop();
   }
 
   @UseGuards(JwtGuard)
@@ -88,7 +86,7 @@ export class WishesController {
     }
     const wish = await this.wishesService.findOne(id);
     await this.wishesService.create({
-      name: wish.name,
+        name: wish.name,
       link: wish.link,
       image: wish.image,
       price: wish.price,
