@@ -5,7 +5,15 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
-import { Equal, In, IsNull, Not, Or, QueryFailedError, Repository } from 'typeorm';
+import {
+  Equal,
+  In,
+  IsNull,
+  Not,
+  Or,
+  QueryFailedError,
+  Repository,
+} from 'typeorm';
 import { Wish } from './entities/wish.entity';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { validate } from 'class-validator';
@@ -56,9 +64,7 @@ export class WishesService {
           },
           where: {
             id,
-            offers: {
-              hidden: false,
-            },
+            offers: { hidden: Or(IsNull(), Not(Equal(true))) },
           },
           select: {
             description: true,
@@ -81,9 +87,7 @@ export class WishesService {
         relations: { offers: true },
         where: {
           id,
-          offers: {
-            hidden: false,
-          },
+          offers: { hidden: Or(IsNull(), Not(Equal(true))) },
         },
         select: {
           name: true,
@@ -306,7 +310,7 @@ export class WishesService {
         owner: {
           username: userName,
         },
-        offers: { hidden: Or(IsNull(), Not(Equal(true))) }
+        offers: { hidden: Or(IsNull(), Not(Equal(true))) },
       },
     });
   }
