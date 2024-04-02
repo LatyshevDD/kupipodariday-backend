@@ -21,7 +21,10 @@ export class OffersController {
         'Не допускается скидываться на собственные подарки',
       );
     }
-    await this.wishesService.checkRaised(createOfferDto.itemId, createOfferDto.amount);
+    await this.wishesService.checkRaised(
+      createOfferDto.itemId,
+      createOfferDto.amount,
+    );
     const wish = await this.wishesService.findOne(createOfferDto.itemId);
     await this.offersService.create(createOfferDto, req.user, wish);
     await this.wishesService.updateRaised(createOfferDto.itemId, createOfferDto.amount);

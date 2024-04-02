@@ -97,8 +97,7 @@ export class UsersService {
   async findOne(id: string) {
     return await this.usersRepository.findOneOrFail({
       where: { id },
-      //todo добавить в relations wishlists
-      relations: { wishes: true, offers: true }
+      relations: { wishes: true, offers: true, wishlists: true }
     });
   }
 }

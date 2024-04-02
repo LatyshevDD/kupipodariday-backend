@@ -44,6 +44,43 @@ export class WishesService {
     }
   }
 
+  async findOneWihUser(id: string, isOwner: boolean) {
+    if (!isOwner) {
+      try {
+        return await this.wishesRepository.findOne({
+          where: { id },
+          select: { description: true, id: true },
+          relations: { owner: true, offers: true, }
+        });
+      } catch (error) {
+        if (error instanceof QueryFailedError) {
+          const err = error.driverError;
+          if (err.code === '22P02') {
+            throw new BadRequestException(
+              'Подарок с таким id не найден!',
+            );
+          }
+        }
+      }
+    }
+    try {
+      return await this.wishesRepository.findOne({
+        where: { id },
+        select: { name: true, image: true, link: true, raised: true, id: true },
+        relations: { offers: true }
+      });
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        const err = error.driverError;
+        if (err.code === '22P02') {
+          throw new BadRequestException(
+            'Подарок с таким id не найден!',
+          );
+        }
+      }
+    }
+  }
+
   async checkOwner(wishId: string, userId: string) {
     let wish: Wish;
     try {

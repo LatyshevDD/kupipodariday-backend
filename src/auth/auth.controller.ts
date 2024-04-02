@@ -18,7 +18,6 @@ export class AuthController {
   signin(@Req() req: {user: User}) {
     return this.authService.auth(req.user);
   }
-  //todo: сделать аватар и описание опциональными
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);

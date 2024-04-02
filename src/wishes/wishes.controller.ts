@@ -43,8 +43,9 @@ export class WishesController {
 
   @UseGuards(JwtGuard)
   @Get(':id')
-  findOne(@Param('id') id: string, @Req() req: Request & { user: User }) {
-    return this.wishesService.findOne(id);
+  async findOne(@Param('id') id: string, @Req() req: Request & { user: User }) {
+    const isOwner = await this.wishesService.checkOwner(id, req.user.id)
+    return await this.wishesService.findOneWihUser(id, isOwner);
   }
 
   @UseGuards(JwtGuard)
