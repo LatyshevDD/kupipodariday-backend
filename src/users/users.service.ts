@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { QueryFailedError, Repository } from 'typeorm';
+import { EntityNotFoundError, QueryFailedError, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { validate } from 'class-validator';
@@ -86,13 +86,29 @@ export class UsersService {
     }
   }
 
-  async findByUsername(username: string) {
-    return await this.usersRepository
-      .findOneOrFail({
-      select: { username: true, password: true, id: true },
-      where: { username },
-    });
+  async findByUsername(username: string, password: boolean) {
+    let user: User;
+    try {
+      user = await this.usersRepository.findOneOrFail({
+        select: {
+          username: true,
+          password: password,
+          id: true,
+          about: true,
+          avatar: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        where: { username },
+      });
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+          throw new BadRequestException('Пользователь с таким именем не найден!');
+      }
+    }
+    return user;
   }
+
 
   async findOne(id: string) {
     return await this.usersRepository.findOneOrFail({

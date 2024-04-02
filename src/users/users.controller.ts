@@ -31,26 +31,15 @@ export class UsersController {
     return await this.wishesService.findByUserId(req.user.id);
   }
 
+  @UseGuards(JwtGuard)
   @Get(':username')
   findOne(@Param('username') username: string) {
-    return {
-      id: 5,
-      username: 'user',
-      about: 'Пока ничего не рассказал о себе',
-      avatar: 'https://i.pravatar.cc/300',
-      createdAt: '2024-03-16T13:48:42.013Z',
-      updatedAt: '2024-03-16T13:48:42.013Z',
-    };
+    return this.usersService.findByUsername(username, false);
   }
 
   @Get(':username/wishes')
   getWishes(@Param('username') username: string) {
-    return [
-      {
-        user: 'username',
-        wishes: 'wishes',
-      },
-    ];
+    return this.wishesService.findByUserName(username);
   }
 
   @Post('find')

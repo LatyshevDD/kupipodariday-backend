@@ -20,7 +20,7 @@ export class AuthService {
   async validatePassword(username: string, password: string) {
     let user: User;
     try {
-      user = await this.usersService.findByUsername(username);
+      user = await this.usersService.findByUsername(username, true);
     } catch (error) {
       throw new UnauthorizedException("Некорректная пара логин и пароль")
     }

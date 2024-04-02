@@ -1,7 +1,11 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
-import { In, QueryFailedError, Repository } from 'typeorm';
+import { Equal, In, IsNull, Not, Or, QueryFailedError, Repository } from 'typeorm';
 import { Wish } from './entities/wish.entity';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { validate } from 'class-validator';
@@ -30,15 +34,13 @@ export class WishesService {
     try {
       return await this.wishesRepository.findOne({
         where: { id },
-        relations: { owner: true, offers: true, wishlists: true }
+        relations: { owner: true, offers: true, wishlists: true },
       });
     } catch (error) {
       if (error instanceof QueryFailedError) {
         const err = error.driverError;
         if (err.code === '22P02') {
-          throw new BadRequestException(
-            'Подарок с таким id не найден!',
-          );
+          throw new BadRequestException('Подарок с таким id не найден!');
         }
       }
     }
@@ -56,7 +58,7 @@ export class WishesService {
             id,
             offers: {
               hidden: false,
-           }
+            },
           },
           select: {
             description: true,
@@ -69,9 +71,7 @@ export class WishesService {
         if (error instanceof QueryFailedError) {
           const err = error.driverError;
           if (err.code === '22P02') {
-            throw new BadRequestException(
-              'Подарок с таким id не найден!',
-            );
+            throw new BadRequestException('Подарок с таким id не найден!');
           }
         }
       }
@@ -83,7 +83,7 @@ export class WishesService {
           id,
           offers: {
             hidden: false,
-          }
+          },
         },
         select: {
           name: true,
@@ -98,9 +98,7 @@ export class WishesService {
       if (error instanceof QueryFailedError) {
         const err = error.driverError;
         if (err.code === '22P02') {
-          throw new BadRequestException(
-            'Подарок с таким id не найден!',
-          );
+          throw new BadRequestException('Подарок с таким id не найден!');
         }
       }
     }
@@ -111,16 +109,14 @@ export class WishesService {
     try {
       wish = await this.wishesRepository.findOne({
         where: { id: wishId },
-        select: {id: true},
-        relations: { owner: true }
+        select: { id: true },
+        relations: { owner: true },
       });
     } catch (error) {
       if (error instanceof QueryFailedError) {
         const err = error.driverError;
         if (err.code === '22P02') {
-          throw new BadRequestException(
-            'Подарок с таким id не найден!',
-          );
+          throw new BadRequestException('Подарок с таким id не найден!');
         }
       }
     }
@@ -133,23 +129,23 @@ export class WishesService {
       wish = await this.wishesRepository.findOne({
         where: { id: wishId },
         select: { raised: true, price: true },
-      })
+      });
     } catch (error) {
       if (error instanceof QueryFailedError) {
         const err = error.driverError;
         if (err.code === '22P02') {
-          throw new BadRequestException(
-            'Подарок с таким id не найден!',
-          );
+          throw new BadRequestException('Подарок с таким id не найден!');
         }
       }
     }
     if (wish.price === wish.raised) {
-      throw new ForbiddenException('На данный подарок уже собраны средства')
+      throw new ForbiddenException('На данный подарок уже собраны средства');
     }
 
     if (wish.price < wish.raised + offerAmount) {
-      throw new ForbiddenException('Сумма собранных средств не может превышать стоимость подарка')
+      throw new ForbiddenException(
+        'Сумма собранных средств не может превышать стоимость подарка',
+      );
     }
   }
 
@@ -159,14 +155,12 @@ export class WishesService {
       wish = await this.wishesRepository.findOne({
         where: { id: wishId },
         select: { id: true, raised: true },
-      })
+      });
     } catch (error) {
       if (error instanceof QueryFailedError) {
         const err = error.driverError;
         if (err.code === '22P02') {
-          throw new BadRequestException(
-            'Подарок с таким id не найден!',
-          );
+          throw new BadRequestException('Подарок с таким id не найден!');
         }
       }
     }
@@ -178,23 +172,23 @@ export class WishesService {
   findManyById(wishesId: string[]) {
     return this.wishesRepository.find({
       where: {
-        id: In(wishesId)
+        id: In(wishesId),
       },
-    })
+    });
   }
 
   async checkOffers(id: string) {
     const wish = await this.wishesRepository.findOne({
       where: {
-        id
+        id,
       },
       select: {
-        id: true
+        id: true,
       },
       relations: {
-        offers: true
-      }
-    })
+        offers: true,
+      },
+    });
     return wish.offers.length > 0;
   }
 
@@ -204,7 +198,7 @@ export class WishesService {
     try {
       existWish = await this.wishesRepository.findOne({
         where: {
-          id
+          id,
         },
         select: {
           id: true,
@@ -213,15 +207,13 @@ export class WishesService {
           image: true,
           price: true,
           description: true,
-        }
-      })
+        },
+      });
     } catch (error) {
       if (error instanceof QueryFailedError) {
         const err = error.driverError;
         if (err.code === '22P02') {
-          throw new BadRequestException(
-            'Подарок с таким id не найден!',
-          );
+          throw new BadRequestException('Подарок с таким id не найден!');
         }
       }
     }
@@ -231,7 +223,9 @@ export class WishesService {
       link: updateWishDto.link ? updateWishDto.link : existWish.link,
       image: updateWishDto.image ? updateWishDto.image : existWish.image,
       price: updateWishDto.price ? updateWishDto.price : existWish.price,
-      description: updateWishDto.description ? updateWishDto.description : existWish.description,
+      description: updateWishDto.description
+        ? updateWishDto.description
+        : existWish.description,
     };
 
     const wish = this.wishesRepository.create(updatedWish);
@@ -253,9 +247,9 @@ export class WishesService {
       relations: {
         offers: true,
         owner: true,
-        wishlists: true
-      }
-    })
+        wishlists: true,
+      },
+    });
     return this.wishesRepository.remove(wish);
   }
 
@@ -263,24 +257,24 @@ export class WishesService {
     return await this.wishesRepository.find({
       take: 40,
       order: {
-        createdAt: "DESC",
+        createdAt: 'DESC',
       },
       relations: {
         owner: true,
-      }
-    })
+      },
+    });
   }
 
   async findTop() {
     return await this.wishesRepository.find({
       take: 20,
       order: {
-        copied: "DESC",
+        copied: 'DESC',
       },
       relations: {
         owner: true,
-      }
-    })
+      },
+    });
   }
 
   async findByUserId(userId: string) {
@@ -296,8 +290,24 @@ export class WishesService {
         },
         offers: {
           hidden: false,
-        }
-      }
-    })
+        },
+      },
+    });
+  }
+
+  async findByUserName(userName: string) {
+    return await this.wishesRepository.find({
+      relations: {
+        owner: true,
+        wishlists: true,
+        offers: true,
+      },
+      where: {
+        owner: {
+          username: userName,
+        },
+        offers: { hidden: Or(IsNull(), Not(Equal(true))) }
+      },
+    });
   }
 }
