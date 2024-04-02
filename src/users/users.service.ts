@@ -1,4 +1,8 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { EntityNotFoundError, QueryFailedError, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -57,12 +61,14 @@ export class UsersService {
 
     const updatedUser = {
       id: existUser.id,
-      username: updateUserDto.username ? updateUserDto.username : existUser.username,
+      username: updateUserDto.username
+        ? updateUserDto.username
+        : existUser.username,
       about: updateUserDto.about ? updateUserDto.about : existUser.about,
-      avatar: updateUserDto.avatar ? updateUserDto.avatar : existUser. avatar,
+      avatar: updateUserDto.avatar ? updateUserDto.avatar : existUser.avatar,
       email: updateUserDto.email ? updateUserDto.email : existUser.email,
       password: newPassword ? newPassword : existUser.password,
-    }
+    };
 
     const user = this.usersRepository.create(updatedUser);
 
@@ -103,17 +109,39 @@ export class UsersService {
       });
     } catch (error) {
       if (error instanceof EntityNotFoundError) {
-          throw new BadRequestException('Пользователь с таким именем не найден!');
+        throw new BadRequestException('Пользователь с таким именем не найден!');
       }
     }
     return user;
   }
 
-
   async findOne(id: string) {
     return await this.usersRepository.findOneOrFail({
       where: { id },
-      relations: { wishes: true, offers: true, wishlists: true }
+      relations: { wishes: true, offers: true, wishlists: true },
     });
+  }
+
+  async findByEmail(email: string) {
+    let user: User;
+    try {
+      user = await this.usersRepository.findOneOrFail({
+        select: {
+          username: true,
+          id: true,
+          about: true,
+          avatar: true,
+          createdAt: true,
+          updatedAt: true,
+          email: true,
+        },
+        where: { email },
+      });
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new BadRequestException('Пользователь с таким email не найден!');
+      }
+    }
+    return user;
   }
 }

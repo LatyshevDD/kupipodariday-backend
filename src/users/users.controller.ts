@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { FindUserDto } from './dto/find-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -10,18 +19,21 @@ import { WishesService } from '../wishes/wishes.service';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private  readonly wishesService: WishesService,
+    private readonly wishesService: WishesService,
   ) {}
 
   @UseGuards(JwtGuard)
   @Get('me')
-  findOwn(@Req() req: Request & { user: User } ) {
+  findOwn(@Req() req: Request & { user: User }) {
     return req.user;
   }
 
   @UseGuards(JwtGuard)
   @Patch('me')
-  async update(@Body() updateUserDto: UpdateUserDto, @Req() req: Request & { user: User }) {
+  async update(
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() req: Request & { user: User },
+  ) {
     return await this.usersService.updateById(req.user.id, updateUserDto);
   }
 
@@ -42,18 +54,9 @@ export class UsersController {
     return this.wishesService.findByUserName(username);
   }
 
+  @UseGuards(JwtGuard)
   @Post('find')
-  findMany(@Body() FindUserDto: FindUserDto) {
-    return [
-      {
-        id: 5,
-        username: "user",
-        about: "Пока ничего не рассказал о себе",
-        avatar: "https://i.pravatar.cc/300",
-        email: "user@yandex.ru",
-        createdAt: "2024-03-16T14:17:41.253Z",
-        updatedAt: "2024-03-16T14:17:41.253Z"
-      },
-    ];
+  findMany(@Body() findUserDto: FindUserDto) {
+    return this.usersService.findByEmail(findUserDto.query);
   }
 }
