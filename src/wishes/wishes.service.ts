@@ -48,9 +48,22 @@ export class WishesService {
     if (!isOwner) {
       try {
         return await this.wishesRepository.findOne({
-          where: { id },
-          select: { description: true, id: true },
-          relations: { owner: true, offers: true, }
+          relations: {
+            owner: true,
+            offers: true,
+          },
+          where: {
+            id,
+            offers: {
+              hidden: false,
+           }
+          },
+          select: {
+            description: true,
+            id: true,
+            offers: true,
+            raised: true,
+          },
         });
       } catch (error) {
         if (error instanceof QueryFailedError) {
@@ -65,9 +78,21 @@ export class WishesService {
     }
     try {
       return await this.wishesRepository.findOne({
-        where: { id },
-        select: { name: true, image: true, link: true, raised: true, id: true },
-        relations: { offers: true }
+        relations: { offers: true },
+        where: {
+          id,
+          offers: {
+            hidden: false,
+          }
+        },
+        select: {
+          name: true,
+          image: true,
+          link: true,
+          raised: true,
+          id: true,
+          offers: true,
+        },
       });
     } catch (error) {
       if (error instanceof QueryFailedError) {
@@ -254,6 +279,24 @@ export class WishesService {
       },
       relations: {
         owner: true,
+      }
+    })
+  }
+
+  async findByUserId(userId: string) {
+    return await this.wishesRepository.find({
+      relations: {
+        owner: true,
+        wishlists: true,
+        offers: true,
+      },
+      where: {
+        owner: {
+          id: userId,
+        },
+        offers: {
+          hidden: false,
+        }
       }
     })
   }

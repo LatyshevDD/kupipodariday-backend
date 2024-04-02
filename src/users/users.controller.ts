@@ -4,14 +4,18 @@ import { FindUserDto } from './dto/find-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtGuard } from '../guards/jwt.guard';
 import { User } from './entities/user.entity';
+import { WishesService } from '../wishes/wishes.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private  readonly wishesService: WishesService,
+  ) {}
 
   @UseGuards(JwtGuard)
   @Get('me')
-  findOwn(@Req() req: Request & { user: User} ) {
+  findOwn(@Req() req: Request & { user: User } ) {
     return req.user;
   }
 
@@ -21,31 +25,10 @@ export class UsersController {
     return await this.usersService.updateById(req.user.id, updateUserDto);
   }
 
+  @UseGuards(JwtGuard)
   @Get('me/wishes')
-  getOwnWishes() {
-    return [
-      {
-        id: 0,
-        createdAt: '2024-03-16T12:25:56.677Z',
-        updatedAt: '2024-03-16T12:25:56.677Z',
-        name: 'string',
-        link: 'string',
-        image: 'string',
-        price: 1,
-        raised: 1,
-        copied: 0,
-        description: 'string',
-        owner: {
-          id: 5,
-          username: 'user',
-          about: 'Пока ничего не рассказал о себе',
-          avatar: 'https://i.pravatar.cc/300',
-          createdAt: '2024-03-16T12:25:56.677Z',
-          updatedAt: '2024-03-16T12:25:56.677Z',
-        },
-        offers: ['string'],
-      },
-    ];
+  async getOwnWishes(@Req() req: Request & { user: User }) {
+    return await this.wishesService.findByUserId(req.user.id);
   }
 
   @Get(':username')

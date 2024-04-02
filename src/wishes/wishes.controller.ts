@@ -44,7 +44,7 @@ export class WishesController {
   @UseGuards(JwtGuard)
   @Get(':id')
   async findOne(@Param('id') id: string, @Req() req: Request & { user: User }) {
-    const isOwner = await this.wishesService.checkOwner(id, req.user.id)
+    const isOwner = await this.wishesService.checkOwner(id, req.user.id);
     return await this.wishesService.findOneWihUser(id, isOwner);
   }
 
@@ -85,9 +85,10 @@ export class WishesController {
     if (isOwner) {
       throw new ForbiddenException("Вы не можете копировать свои wishes")
     }
+    //todo: сделать уведичение copied в wish
     const wish = await this.wishesService.findOne(id);
     await this.wishesService.create({
-        name: wish.name,
+      name: wish.name,
       link: wish.link,
       image: wish.image,
       price: wish.price,

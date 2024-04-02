@@ -33,7 +33,7 @@ export class OffersService {
   async findAll() {
     return await this.offersRepository.find({
       where: {
-        hidden: false
+        hidden: false,
       },
       relations: {
         item: true,
