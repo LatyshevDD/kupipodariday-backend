@@ -1,10 +1,10 @@
 import {
   Body,
   Controller,
-  Delete, ForbiddenException,
+  Delete,
+  ForbiddenException,
   Get,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
   Req,
@@ -53,16 +53,18 @@ export class WishesController {
   async update(
     @Param('id') id: string,
     @Body() updateWishDto: UpdateWishDto,
-    @Req() req: Request & { user: User }
+    @Req() req: Request & { user: User },
   ) {
-    const isOwner = await this.wishesService.checkOwner(id, req.user.id)
+    const isOwner = await this.wishesService.checkOwner(id, req.user.id);
     if (!isOwner) {
-      throw new ForbiddenException("Вы можете изменять только свои wishes")
+      throw new ForbiddenException('Вы можете изменять только свои wishes');
     }
     if (updateWishDto.price) {
       const isOffers = await this.wishesService.checkOffers(id);
       if (isOffers) {
-        throw new ForbiddenException("Нельзя изменять цену на подарки, для которых есть offer")
+        throw new ForbiddenException(
+          'Нельзя изменять цену на подарки, для которых есть offer',
+        );
       }
     }
     return await this.wishesService.update(id, updateWishDto);
@@ -70,30 +72,38 @@ export class WishesController {
 
   @UseGuards(JwtGuard)
   @Delete(':id')
-  async removeOne(@Param('id') id: string, @Req() req: Request & { user: User }) {
-    const isOwner = await this.wishesService.checkOwner(id, req.user.id)
+  async removeOne(
+    @Param('id') id: string,
+    @Req() req: Request & { user: User },
+  ) {
+    const isOwner = await this.wishesService.checkOwner(id, req.user.id);
     if (!isOwner) {
-      throw new ForbiddenException("Вы можете удалять только свои wishes")
+      throw new ForbiddenException('Вы можете удалять только свои wishes');
     }
     return this.wishesService.removeOne(id);
   }
 
   @UseGuards(JwtGuard)
   @Post(':id/copy')
-  async copyWish(@Param('id') id: string, @Req() req: Request & { user: User }) {
-    const isOwner = await this.wishesService.checkOwner(id, req.user.id)
+  async copyWish(
+    @Param('id') id: string,
+    @Req() req: Request & { user: User },
+  ) {
+    const isOwner = await this.wishesService.checkOwner(id, req.user.id);
     if (isOwner) {
-      throw new ForbiddenException("Вы не можете копировать свои wishes")
+      throw new ForbiddenException('Вы не можете копировать свои wishes');
     }
-    //todo: сделать уведичение copied в wish
     const wish = await this.wishesService.findOne(id);
-    await this.wishesService.create({
-      name: wish.name,
-      link: wish.link,
-      image: wish.image,
-      price: wish.price,
-      description: wish.description,
-    }, req.user)
-    return {};
+    await this.wishesService.updateCopied(id);
+    return await this.wishesService.create(
+      {
+        name: wish.name,
+        link: wish.link,
+        image: wish.image,
+        price: wish.price,
+        description: wish.description,
+      },
+      req.user,
+    );
   }
 }

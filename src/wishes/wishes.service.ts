@@ -173,6 +173,26 @@ export class WishesService {
     await this.wishesRepository.save({ id: wishId, raised: newRaised });
   }
 
+  async updateCopied(wishId: string) {
+    let wish: Wish;
+    try {
+      wish = await this.wishesRepository.findOne({
+        where: { id: wishId },
+        select: { id: true, copied: true },
+      });
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        const err = error.driverError;
+        if (err.code === '22P02') {
+          throw new BadRequestException('Подарок с таким id не найден!');
+        }
+      }
+    }
+    const copied = wish.copied ? wish.copied : 0;
+    const newCopied = copied + 1;
+    await this.wishesRepository.save({ id: wishId, copied: newCopied });
+  }
+
   findManyById(wishesId: string[]) {
     return this.wishesRepository.find({
       where: {
@@ -198,7 +218,6 @@ export class WishesService {
 
   async update(id: string, updateWishDto: UpdateWishDto) {
     let existWish: Wish;
-    //todo проверить все методы update на наличие try catch
     try {
       existWish = await this.wishesRepository.findOne({
         where: {

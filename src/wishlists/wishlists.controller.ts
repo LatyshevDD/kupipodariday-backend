@@ -6,9 +6,9 @@ import {
   Patch,
   Param,
   Delete,
-  ParseIntPipe,
   UseGuards,
-  Req, ForbiddenException,
+  Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistsDto } from './dto/create-wishlists.dto';
@@ -53,11 +53,11 @@ export class WishlistsController {
   async update(
     @Param('id') id: string,
     @Body() updateWishlistsDto: UpdateWishlistsDto,
-    @Req() req: Request & { user: User }
+    @Req() req: Request & { user: User },
   ) {
-    const isOwner = await this.wishlistsService.checkOwner(id, req.user.id)
+    const isOwner = await this.wishlistsService.checkOwner(id, req.user.id);
     if (!isOwner) {
-      throw new ForbiddenException("Допускется изменять только свои wishlists")
+      throw new ForbiddenException('Допускется изменять только свои wishlists');
     }
     let wishes: Wish[];
     if (updateWishlistsDto.itemsId && updateWishlistsDto.itemsId.length > 0) {
@@ -70,7 +70,10 @@ export class WishlistsController {
 
   @UseGuards(JwtGuard)
   @Delete(':id')
-  async removeOne(@Param('id') id: string, @Req() req: Request & { user: User }) {
+  async removeOne(
+    @Param('id') id: string,
+    @Req() req: Request & { user: User },
+  ) {
     const isOwner = await this.wishlistsService.checkOwner(id, req.user.id);
     if (!isOwner) {
       throw new ForbiddenException('Удалять можно только свой wishlist');

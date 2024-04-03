@@ -1,5 +1,3 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateWishlistsDto } from './create-wishlists.dto';
 import { IsArray, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class UpdateWishlistsDto {

@@ -9,7 +9,7 @@ import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
 
 @Module({
-  imports:[
+  imports: [
     UsersModule,
     PassportModule,
     JwtModule.registerAsync({
@@ -19,9 +19,9 @@ import { JwtStrategy } from './jwt.strategy';
       }),
       inject: [ConfigService],
     }),
-    ConfigModule.forRoot()
+    ConfigModule.forRoot(),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy]
+  providers: [AuthService, LocalStrategy, JwtStrategy],
 })
 export class AuthModule {}

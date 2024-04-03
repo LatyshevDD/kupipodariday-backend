@@ -12,7 +12,6 @@ import { Offer } from './offers/entities/offer.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 
-
 @Module({
   controllers: [AppController],
   imports: [

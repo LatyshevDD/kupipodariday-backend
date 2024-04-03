@@ -8,6 +8,6 @@ import { WishesModule } from '../wishes/wishes.module';
 @Module({
   imports: [TypeOrmModule.forFeature([Wishlist]), WishesModule],
   controllers: [WishlistsController],
-  providers: [WishlistsService]
+  providers: [WishlistsService],
 })
 export class WishlistsModule {}

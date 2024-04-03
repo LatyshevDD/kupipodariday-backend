@@ -41,17 +41,27 @@ export class UsersService {
   }
 
   async updateById(id: string, updateUserDto: UpdateUserDto) {
-    const existUser = await this.usersRepository.findOne({
-      select: {
-        username: true,
-        password: true,
-        id: true,
-        about: true,
-        avatar: true,
-        email: true,
-      },
-      where: { id },
-    });
+    let existUser: User;
+    try {
+      existUser = await this.usersRepository.findOne({
+        select: {
+          username: true,
+          password: true,
+          id: true,
+          about: true,
+          avatar: true,
+          email: true,
+        },
+        where: { id },
+      });
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        const err = error.driverError;
+        if (err.code === '22P02') {
+          throw new BadRequestException('Пользователь с таким id не найден!');
+        }
+      }
+    }
 
     let newPassword: string;
 

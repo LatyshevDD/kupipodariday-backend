@@ -28,7 +28,10 @@ export class Offer {
   item: Wish;
 
   @Column({ type: 'numeric' })
-  @IsNumber({ maxDecimalPlaces: 2 }, {message: 'Значение должно быть округлено до сотых'})
+  @IsNumber(
+    { maxDecimalPlaces: 2 },
+    { message: 'Значение должно быть округлено до сотых' },
+  )
   amount: number;
 
   @Column({
