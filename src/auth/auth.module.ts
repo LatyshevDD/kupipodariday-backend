@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LocalStrategy } from './local.strategy';
 import { JwtStrategy } from './jwt.strategy';
+import { HelpersModule } from '../helpers/helpers.module';
 
 @Module({
   imports: [
@@ -16,10 +17,12 @@ import { JwtStrategy } from './jwt.strategy';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '60s' },
       }),
       inject: [ConfigService],
     }),
     ConfigModule.forRoot(),
+    HelpersModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy],
