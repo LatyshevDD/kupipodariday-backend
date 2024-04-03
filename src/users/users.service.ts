@@ -8,14 +8,15 @@ import { EntityNotFoundError, QueryFailedError, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { validate } from 'class-validator';
-import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { HelpersService } from '../helpers/helpers.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private helpersService: HelpersService,
   ) {}
   async create(createUserDto: CreateUserDto) {
     const user = this.usersRepository.create(createUserDto);
@@ -24,7 +25,7 @@ export class UsersService {
       const messages = errors.map((error) => error.constraints);
       throw new BadRequestException(messages);
     }
-    user.password = await bcrypt.hash(createUserDto.password, 10);
+    user.password = await this.helpersService.hash(createUserDto.password);
     try {
       const newuser = await this.usersRepository.save(user);
       return newuser;
@@ -66,7 +67,7 @@ export class UsersService {
     let newPassword: string;
 
     if (updateUserDto.password) {
-      newPassword = await bcrypt.hash(updateUserDto.password, 10);
+      newPassword = await this.helpersService.hash(updateUserDto.password);
     }
 
     const updatedUser = {
