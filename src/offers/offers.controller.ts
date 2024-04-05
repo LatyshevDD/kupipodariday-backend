@@ -40,6 +40,10 @@ export class OffersController {
       createOfferDto.itemId,
       createOfferDto.amount,
     );
+    await this.wishesService.checkPrice(
+      createOfferDto.itemId,
+      createOfferDto.amount,
+    );
     const wish = await this.wishesService.findOne(createOfferDto.itemId);
     await this.offersService.create(createOfferDto, req.user, wish);
     await this.wishesService.updateRaised(

@@ -333,4 +333,24 @@ export class WishesService {
       },
     });
   }
+
+  async checkPrice(wishId: string, offerAmount: number) {
+    let wish: Wish;
+    try {
+      wish = await this.wishesRepository.findOne({
+        where: { id: wishId },
+        select: { id: true, price: true },
+      });
+    } catch (error) {
+      if (error instanceof QueryFailedError) {
+        const err = error.driverError;
+        if (err.code === '22P02') {
+          throw new BadRequestException('Подарок с таким id не найден!');
+        }
+      }
+    }
+    if (wish.price < offerAmount) {
+      throw new ForbiddenException('Сумма предложения превышает цену подарка');
+    }
+  }
 }

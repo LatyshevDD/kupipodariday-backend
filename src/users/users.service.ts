@@ -133,7 +133,7 @@ export class UsersService {
     });
   }
 
-  async findByEmail(email: string) {
+  async findUser(query: string) {
     let user: User;
     try {
       user = await this.usersRepository.findOneOrFail({
@@ -146,7 +146,7 @@ export class UsersService {
           updatedAt: true,
           email: true,
         },
-        where: { email },
+        where: [{ email: query }, { username: query }],
       });
     } catch (error) {
       if (error instanceof EntityNotFoundError) {

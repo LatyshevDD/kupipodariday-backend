@@ -17,7 +17,7 @@ import { HelpersModule } from '../helpers/helpers.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '60s' },
+        signOptions: { expiresIn: '3d' },
       }),
       inject: [ConfigService],
     }),

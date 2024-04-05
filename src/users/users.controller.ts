@@ -57,6 +57,6 @@ export class UsersController {
   @UseGuards(JwtGuard)
   @Post('find')
   findMany(@Body() findUserDto: FindUserDto) {
-    return this.usersService.findByEmail(findUserDto.query);
+    return this.usersService.findUser(findUserDto.query);
   }
 }
