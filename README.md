@@ -20,8 +20,7 @@
    - DTO
    - class-validator
    - class-transformer
-9. Реализованы CRUD контроллеры для пользователей ( users ), подарков ( wishes ), списков желаний ( wishlists ) и списка
-желающих скинуться ( offers )
+9. Реализованы CRUD контроллеры для пользователей ( users ), подарков ( wishes ), списков желаний ( wishlists ) и списка желающих скинуться ( offers )
 10. В проекте реализована регистрация и авторизация:
    - применяются пакеты @nestjs/passport , @nestjs/jwt , passport, passport-local и bcrypt
    - пароли хранятся в хешированом виде
